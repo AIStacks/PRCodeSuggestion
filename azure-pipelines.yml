@@ -1,0 +1,59 @@
+# ASP.NET Core
+# Build and test ASP.NET Core projects targeting .NET Core.
+# Add steps that run tests, create a NuGet package, deploy, and more:
+# https://docs.microsoft.com/azure/devops/pipelines/languages/dotnet-core
+#name: $(Year:yyyy).$(ReleaseCandidate)$(Rev:.r)
+
+trigger:
+- develop
+
+pool:
+  vmImage: ubuntu-latest
+
+variables:
+  buildConfiguration: 'Release'
+
+steps:
+- task: NodeTool@0
+  inputs:
+    versionSpec: '18.x'
+
+- task: UseDotNet@2
+  inputs:
+    version: '8.0.x'
+
+- script: |
+    corepack enable
+    corepack prepare pnpm@latest-9 --activate
+  displayName: "Setup pnpm"
+
+- script: |
+    pnpm install -C ./src/WebApp --no-frozen-lockfile
+  displayName: "Npm install for the App"
+
+- task: DotNetCoreCLI@2
+  displayName: Restore packages for the Api
+  inputs:
+    command: 'restore'
+    projects: 'src/WebApi/*.csproj'
+
+- task: DotNetCoreCLI@2
+  displayName: Publish the Api & App
+  inputs:
+    command: 'publish'
+    publishWebProjects: false
+    projects: 'src/WebApi/*.csproj'
+    arguments: '--configuration $(buildConfiguration) -o $(build.artifactstagingdirectory)/dist'
+    zipAfterPublish: false
+    modifyOutputPath: false
+
+- powershell: '$env:BUILD_BUILDNUMBER | Out-File $(build.artifactstagingdirectory)\dist\build.txt'
+  failOnStderr: true
+  displayName: 'Create Build.txt'
+
+- task: PublishBuildArtifacts@1
+  inputs:
+    PathtoPublish: '$(build.artifactstagingdirectory)/dist'
+    ArtifactName: 'nova'
+    publishLocation: 'Container'
+
