@@ -1,0 +1,29 @@
+{
+  "name": "AI.Agents.PRCodeSuggestion",
+  "short_name": "PRCodeSuggestion",
+  "description": "An AI-Powered tool to provides code suggestions and improvements for pull requests on Azure DevOps.",
+  "lang": "en-US",
+  "start_url": "./",
+  "scope": "./",
+  "theme_color": "#000000",
+  "background_color": "#FFFFFF",
+  "display": "standalone",
+  "display_override": ["window-controls-overlay"],
+  "edge_side_panel": {
+    "preferred_width": 496
+  },
+  "icons": [
+    {
+      "src": "/icons/favicon-48.png",
+      "sizes": "48x48"
+    },
+    {
+      "src": "/icons/favicon-96.png",
+      "sizes": "96x96"
+    },
+    {
+      "src": "/icons/favicon-128.png",
+      "sizes": "128x128"
+    }
+  ]
+}
